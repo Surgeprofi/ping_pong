@@ -7,9 +7,53 @@ background = window.fill((200, 255, 255))
 clock = time.Clock()
 FPS = 60
 
+keys_pressed = key.get_pressed()
+
+class GameSprite(sprite.Sprite):
+    def __init__(self, player_image, player_x, player_y, size_x, size_y, player_speed):
+        super().__init__()
+        self.image = transform.scale(image.load(player_image), (size_x, size_y))
+        self.speed = player_speed
+        self.rect = self.image.get_rect()
+        self.rect.x = player_x
+        self.rect.y = player_y
+        # self.size_x = size_x
+        # self.size_y = size_y
+
+    def reset(self):
+        window.blit(self.image, (self.rect.x, self.rect.y))
+
+class Player1(GameSprite):
+    def update(self):
+        keys_pressed = key.get_pressed()    
+        if keys_pressed[K_w] and self.rect.y > 5:
+            self.rect.x -= self.speed
+        if keys_pressed[K_s] and self.rect.y < 640:
+            self.rect.x += self.speed
+
+class Player2(GameSprite):
+    def update(self):
+        keys_pressed = key.get_pressed()    
+        if keys_pressed[K_i] and self.rect.y > 5:
+            self.rect.x -= self.speed
+        if keys_pressed[K_k] and self.rect.y < 640:
+            self.rect.x += self.speed
+
+sprite_player1 = Player1(('roketo.jpg'), 0, 250, 60, 100, 5)
+sprite_player2 = Player2(('roketo.jpg'), 640, 250, 60, 100, 5)
+sprite_ball = GameSprite(('myach.jpg'), 350, 250, 60, 100, 5)
+
 game = True
 
 while game:
+    for e in event.get():
+        if e.type == QUIT:
+            game = False
+
+    # window.update()
+    sprite_ball.reset()
+    sprite_player1.reset()
+    sprite_player2.reset()
 
     clock.tick(FPS)
     display.update()
@@ -47,28 +91,6 @@ while game:
 # font3 = font.SysFont('Arial', 72)
 # font4 = font.SysFont('Arial', 72)
 # font5 = font.SysFont('Arial', 128)
-
-# class GameSprite(sprite.Sprite):
-#     def __init__(self, player_image, player_x, player_y, size_x, size_y, player_speed):
-#         super().__init__()
-#         self.image = transform.scale(image.load(player_image), (size_x, size_y))
-#         self.speed = player_speed
-#         self.rect = self.image.get_rect()
-#         self.rect.x = player_x
-#         self.rect.y = player_y
-#         # self.size_x = size_x
-#         # self.size_y = size_y
-
-#     def reset(self):
-#         window.blit(self.image, (self.rect.x, self.rect.y))
-
-# class Player(GameSprite):
-#     def update(self):
-#         keys_pressed = key.get_pressed()    
-#         if keys_pressed[K_d] and self.rect.x < 640:
-#             self.rect.x += self.speed
-#         if keys_pressed[K_a] and self.rect.x > 5:
-#             self.rect.x -= self.speed
 
 #     def fire(self):
 #         bullet1 = Bullet(('bullet.png'), self.rect.centerx, self.rect.top, 15, 20, -15)
