@@ -2,12 +2,18 @@ from pygame import *
 
 window = display.set_mode((700, 500))
 display.set_caption('Пинг понг')
-background = window.fill((200, 255, 255))
+window.fill((200, 255, 255))
 
 clock = time.Clock()
 FPS = 60
 
 keys_pressed = key.get_pressed()
+
+font.init()
+font1 = font.SysFont('Arial', 128)
+
+speed_x = 3
+speed_y = 3
 
 class GameSprite(sprite.Sprite):
     def __init__(self, player_image, player_x, player_y, size_x, size_y, player_speed):
@@ -26,35 +32,56 @@ class GameSprite(sprite.Sprite):
 class Player1(GameSprite):
     def update(self):
         keys_pressed = key.get_pressed()    
-        if keys_pressed[K_w] and self.rect.y > 5:
-            self.rect.x -= self.speed
-        if keys_pressed[K_s] and self.rect.y < 640:
-            self.rect.x += self.speed
+        if keys_pressed[K_w] and self.rect.y > 0:
+            self.rect.y -= self.speed
+        if keys_pressed[K_s] and self.rect.y < 400:
+            self.rect.y += self.speed
 
 class Player2(GameSprite):
     def update(self):
         keys_pressed = key.get_pressed()    
-        if keys_pressed[K_i] and self.rect.y > 5:
-            self.rect.x -= self.speed
-        if keys_pressed[K_k] and self.rect.y < 640:
-            self.rect.x += self.speed
+        if keys_pressed[K_i] and self.rect.y > 0:
+            self.rect.y -= self.speed
+        if keys_pressed[K_k] and self.rect.y < 400:
+            self.rect.y += self.speed
 
 sprite_player1 = Player1(('roketo.jpg'), 0, 250, 60, 100, 5)
 sprite_player2 = Player2(('roketo.jpg'), 640, 250, 60, 100, 5)
-sprite_ball = GameSprite(('myach.jpg'), 350, 250, 60, 100, 5)
+sprite_ball = GameSprite(('myach.jpg'), 350, 200, 60, 100, 5)
 
 game = True
+finish = False
+
 
 while game:
     for e in event.get():
         if e.type == QUIT:
             game = False
+    if finish != True:
+        if sprite_ball.rect.y > 400 or sprite_ball.rect.y < 0:
+            speed_y *= -1
 
-    # window.update()
-    sprite_ball.reset()
-    sprite_player1.reset()
-    sprite_player2.reset()
+        if sprite_ball.rect.x < 0:
+            text_1 = font1.render('PLAYER 1 LOSE!', True, (255, 0, 0))
+            window.blit(text_1, (250, 250))
+            finish = True
+        elif sprite_ball.rect.x > 640:
+            text_2 = font1.render('PLAYER 2 LOSE!', True, (0, 255, 0))
+            window.blit(text_2, (250, 250))
+            finish = True
 
+        window.fill((200, 255, 255))
+        sprite_player1.update()
+        sprite_player2.update()        
+        sprite_ball.rect.x += speed_x
+        sprite_ball.rect.y += speed_y
+        if sprite.collide_rect(sprite_player1, sprite_ball) or sprite.collide_rect(sprite_player2, sprite_ball):
+            speed_x *= -1
+
+
+        sprite_ball.reset()
+        sprite_player1.reset()
+        sprite_player2.reset()
     clock.tick(FPS)
     display.update()
 
@@ -234,5 +261,3 @@ while game:
 #             sprite_asteroid = Asteroid(('asteroid.png'), randint(50, 650), -40, 80, 50, randint(1, 5))
 #             asteroids.add(sprite_asteroid)
 
-#     clock.tick(FPS)
-#     display.update()
